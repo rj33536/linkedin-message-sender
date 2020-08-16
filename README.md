@@ -1,6 +1,6 @@
 # linkedin-request-sender
-
-To use this script, edit company, maxPages, message in linkedin.js
+This script will let you send messages to all your connections at specific company.
+To use this script, edit company, message in linkedin.js
 
 create a credentials.json file, put your credentials there :
 

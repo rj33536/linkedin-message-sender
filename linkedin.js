@@ -8,8 +8,8 @@ let tabWillBeOpenedPromise = tab.get(
   "https://www.linkedin.com/login?fromSignIn=true&trk=guest_homepage-basic_nav-header-signin"
 );
 
-let company = "Amazon";
-let maxPages = 2;
+let company = "Swiggy";
+let maxPages = 1;
 let maxRequests = 90;
 let requestCount = 0;
 let profilesUrls = [];
@@ -41,7 +41,7 @@ tabWillBeOpenedPromise
     let results = resText.split(" ")[0];
     results = results.replace(",", "");
     results = parseInt(results);
-    maxPages = Math.ceil(results / 10);
+    //maxPages = Math.ceil(results / 10);
     for (let i = 1; i <= maxPages; i++) {
       await tab.get(
         'https://www.linkedin.com/search/results/people/?facetNetwork=%5B"F"%5D&keywords=' +
@@ -75,7 +75,7 @@ tabWillBeOpenedPromise
       await message(profilesUrls[index]);
       await tab.sleep(1000);
     }
- 
+
     return undefined;
   })
   .catch(function (err) {
@@ -105,45 +105,80 @@ async function login() {
 }
 async function click(selector) {
   return new Promise(async function (resolve, reject) {
-    let sendBtn = await tab.findElement(
-      swd.By.css(
-        selector
-      )
-    );
-    console.log(sendBtn);
-    await sendBtn.click();
-    console.log("btn clicked");
-    await tab;
-    resolve();
+    try {
+      let sendBtn = await tab.findElement(
+        swd.By.css(
+          selector
+        )
+      );
+      console.log(sendBtn);
+      await sendBtn.click();
+      console.log("btn clicked");
+      await tab;
+      resolve();
+    } catch (error) {
+      reject();
+    }
+  })
+}
+async function clickAll(selector) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      let sendBtns = await tab.findElements(
+        swd.By.css(
+          selector
+        )
+      );
+      for (let i = 0; i < sendBtns.length; i++) {
+
+        await sendBtns[i].click();
+        console.log("btn clicked");
+        await tab;
+      }
+
+      resolve();
+    } catch (error) {
+      reject();
+    }
   })
 }
 async function fill(selector, input) {
   return new Promise(async function (resolve, reject) {
-    let inputBox = await tab.findElement(
-      swd.By.css(
-        selector
-      )
-    );
-    await inputBox.sendKeys(input);
-    await tab;
-    resolve();
+    try {
+      let inputBox = await tab.findElement(
+        swd.By.css(
+          selector
+        )
+      );
+      await inputBox.sendKeys(input);
+      await tab;
+      resolve();
+    } catch (error) {
+      reject();
+    }
   })
 }
 
 async function message(url) {
   return new Promise(async function (resolve, reject) {
-    let getProfilePage = await tab.get(url);
-    let nameli = await tab.findElement(
-      swd.By.css(".t-24.t-black.t-normal.break-words")
-    );
-    let name = await nameli.getText();
-    await click(".message-anywhere-button");
-    await fill(".msg-form__contenteditable", myMessage);
-    await tab.sleep(1000);
-    await click(".msg-form__send-button");
-    await tab.sleep(1000);
-    await click("[data-control-name='overlay.close_conversation_window']");
+    try {
+      let getProfilePage = await tab.get(url);
+      let nameli = await tab.findElement(
+        swd.By.css(".t-24.t-black.t-normal.break-words")
+      );
+      let name = await nameli.getText();
+      await clickAll("[data-control-name='overlay.close_conversation_window']");
+      await click(".message-anywhere-button");
 
-    resolve();
+      await fill(".msg-form__contenteditable", myMessage);
+      await tab.sleep(1000);
+      await click(".msg-form__send-button");
+      await tab.sleep(1000);
+      await click("[data-control-name='overlay.close_conversation_window']");
+
+      resolve();
+    } catch (error) {
+      resolve();
+    }
   });
 }

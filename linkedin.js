@@ -41,7 +41,7 @@ tabWillBeOpenedPromise
     let results = resText.split(" ")[0];
     results = results.replace(",", "");
     results = parseInt(results);
-    //maxPages = Math.ceil(results / 10);
+    maxPages = Math.ceil(results / 10);
     for (let i = 1; i <= maxPages; i++) {
       await tab.get(
         'https://www.linkedin.com/search/results/people/?facetNetwork=%5B"F"%5D&keywords=' +
